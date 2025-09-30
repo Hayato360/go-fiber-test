@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	"log"
 	m "go-fiber-test/models"
+	"log"
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
@@ -10,8 +12,6 @@ import (
 func HelloTest(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
-
-
 
 func BodyParserTest(c *fiber.Ctx) error {
 	p := new(m.Person)
@@ -55,4 +55,39 @@ func ValidTest(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user)
+}
+
+func FactorialEnd(c *fiber.Ctx) error {
+	numStr := c.Params("num")
+	num, err := strconv.Atoi(numStr)
+	if err != nil || num < 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid number"})
+	}
+	fact := 1
+	for i := 2; i <= num; i++ {
+		fact *= i
+	}
+	return c.JSON(fiber.Map{
+		"number":    num,
+		"factorial": fact,
+	})
+}
+
+func AsciiConverter(c *fiber.Ctx) error {
+	taxId := c.Query("tax_id")
+	if taxId == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "tax_id query parameter is required",
+		})
+	}
+
+	var asciiValues []int
+	for _, char := range taxId {
+		asciiValues = append(asciiValues, int(char))
+	}
+
+	return c.JSON(fiber.Map{
+		"input":        taxId,
+		"ascii_values": asciiValues,
+	})
 }
