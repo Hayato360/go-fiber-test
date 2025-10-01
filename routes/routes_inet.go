@@ -28,19 +28,18 @@ func InetRoutes(app *fiber.App) {
 
 	v1.Post("/valid", c.ValidTest)
 
-	// Mock data route
 	v1.Post("/mock-data", c.CreateMockData)
 
-	//CRUD dogs
 	dog := v1.Group("/dog")
 	dog.Get("", c.GetDogs)
 	dog.Get("/filter", c.GetDog)
 	dog.Get("/json", c.GetDogsJson)
+	dog.Get("/deleted", c.GetDeletedDogs)
+	dog.Get("/range", c.GetDogsByRange)
 	dog.Post("/", c.AddDog)
 	dog.Put("/:id", c.UpdateDog)
 	dog.Delete("/:id", c.RemoveDog)
 
-	//CRUD companies
 	company := v1.Group("/company")
 	company.Get("/", c.GetCompanies)
 	company.Get("/:id", c.GetCompany)

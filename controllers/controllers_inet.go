@@ -73,7 +73,6 @@ func GetDog(c *fiber.Ctx) error {
 
 	result := db.Find(&dog, "dog_id = ?", search)
 
-	// returns found records count, equals `len(users)
 	if result.RowsAffected == 0 {
 		return c.SendStatus(404)
 	}
@@ -81,7 +80,7 @@ func GetDog(c *fiber.Ctx) error {
 }
 
 func AddDog(c *fiber.Ctx) error {
-	//twst3
+
 	db := database.DBConn
 	var dog m.Dogs
 
@@ -118,6 +117,38 @@ func RemoveDog(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(200)
+}
+
+func GetDeletedDogs(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	// ใช้ Unscoped() เพื่อดึงข้อมูลที่ถูก soft delete ด้วย
+	// และใช้ Where เพื่อกรองเฉพาะข้อมูลที่ถูกลบ (deleted_at IS NOT NULL)
+	db.Unscoped().Where("deleted_at IS NOT NULL").Find(&dogs)
+
+	return c.Status(200).JSON(fiber.Map{
+		"status":  "success",
+		"message": "Deleted dogs retrieved successfully",
+		"data":    dogs,
+		"count":   len(dogs),
+	})
+}
+
+func GetDogsByRange(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	// ค้นหาสุนัขที่มี dog_id มากกว่า 50 แต่น้อยกว่า 100
+	db.Where("dog_id > ? AND dog_id < ?", 50, 100).Find(&dogs)
+
+	return c.Status(200).JSON(fiber.Map{
+		"status":  "success",
+		"message": "Dogs with ID between 50-100 retrieved successfully",
+		"data":    dogs,
+		"count":   len(dogs),
+		"filter":  "dog_id > 50 AND dog_id < 100",
+	})
 }
 
 func GetDogsJson(c *fiber.Ctx) error {
