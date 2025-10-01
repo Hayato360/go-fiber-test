@@ -1,9 +1,10 @@
 package routes
 
 import (
+	c "go-fiber-test/controllers"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
-	c "go-fiber-test/controllers"
 )
 
 func InetRoutes(app *fiber.App) {
@@ -19,11 +20,6 @@ func InetRoutes(app *fiber.App) {
 
 	v1.Get("/", c.HelloTest)
 
-	type Person struct {
-		Name string `json:"name"`
-		Pass string `json:"pass"`
-	}
-
 	v1.Post("/", c.BodyParserTest)
 
 	v1.Get("/user/:name", c.ParamsTest)
@@ -31,6 +27,9 @@ func InetRoutes(app *fiber.App) {
 	v1.Post("/inet", c.QueryTest)
 
 	v1.Post("/valid", c.ValidTest)
+
+	// Mock data route
+	v1.Post("/mock-data", c.CreateMockData)
 
 	//CRUD dogs
 	dog := v1.Group("/dog")
@@ -40,4 +39,14 @@ func InetRoutes(app *fiber.App) {
 	dog.Post("/", c.AddDog)
 	dog.Put("/:id", c.UpdateDog)
 	dog.Delete("/:id", c.RemoveDog)
+
+	//CRUD companies
+	company := v1.Group("/company")
+	company.Get("/", c.GetCompanies)
+	company.Get("/:id", c.GetCompany)
+	company.Get("/search", c.GetCompanyByName)
+	company.Post("/", c.AddCompany)
+	company.Put("/:id", c.UpdateCompany)
+	company.Delete("/:id", c.RemoveCompany)
+
 }
