@@ -4,13 +4,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	c "go-fiber-test/controllers"
-	
 )
 
 func InetRoutes(app *fiber.App) {
 	app.Use(basicauth.New(basicauth.Config{
 		Users: map[string]string{
-			"john": "doe",
+			"john":  "doe",
 			"admin": "1234",
 		},
 	}))
@@ -32,4 +31,13 @@ func InetRoutes(app *fiber.App) {
 	v1.Post("/inet", c.QueryTest)
 
 	v1.Post("/valid", c.ValidTest)
+
+	//CRUD dogs
+	dog := v1.Group("/dog")
+	dog.Get("", c.GetDogs)
+	dog.Get("/filter", c.GetDog)
+	dog.Get("/json", c.GetDogsJson)
+	dog.Post("/", c.AddDog)
+	dog.Put("/:id", c.UpdateDog)
+	dog.Delete("/:id", c.RemoveDog)
 }
